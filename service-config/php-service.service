@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 # Cambia 'tu_usuario' por el usuario con el que quieres ejecutar el script (ej: www-data)
-User=www-data
-Group=www-data
+User=ccruser2020
+Group=ccruser2020
 
 # Cambia esto por la ruta absoluta a la raíz de tu proyecto
 WorkingDirectory=/ruta/absoluta/a/tu/proyecto
