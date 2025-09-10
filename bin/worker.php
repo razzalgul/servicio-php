@@ -1,13 +1,13 @@
 <?php
 date_default_timezone_set('America/Lima');
-require __DIR__ . '/../vendor/autoload.php';
+require_once  __DIR__ . '/../vendor/autoload.php';
 
 use DI\ContainerBuilder;
 use App\EventSyncTask;
 
 try {
     $containerBuilder = new ContainerBuilder();
-    // ...definiciones y construcción del contenedor...
+    // ... definiciones y construcción del contenedor...
     $containerBuilder->addDefinitions([
     Psr\Log\LoggerInterface::class => function () {
         $logger = new Monolog\Logger('app');

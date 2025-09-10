@@ -1,6 +1,6 @@
 {
-    "name": "your-vendor/data-service",
-    "description": "A service to read data from SQL Server and send it via WebSocket.",
+    "name": "ccrp7/data-service",
+    "description": "servicio de lectura y envio de datos.",
     "type": "project",
     "require": {
         "php": ">=8.0",

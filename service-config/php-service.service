@@ -1,0 +1,25 @@
+[Unit]
+Description=Servicio de envio de datos
+After=network.target
+
+[Service]
+# Cambia 'tu_usuario' por el usuario con el que quieres ejecutar el script (ej: www-data)
+User=www-data
+Group=www-data
+
+# Cambia esto por la ruta absoluta a la raíz de tu proyecto
+WorkingDirectory=/ruta/absoluta/a/tu/proyecto
+
+# Comando para ejecutar el script. Asegúrate que la ruta a php es correcta.
+ExecStart=/usr/bin/php /home/ccruser2020/Documents/projects/phpService-master/bin/worker.php
+
+# Política de reinicio
+Restart=on-failure
+RestartSec=5s
+
+# Configuración de logging
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
