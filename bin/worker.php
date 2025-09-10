@@ -1,20 +1,44 @@
 <?php
 date_default_timezone_set('America/Lima');
-require_once  __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use DI\ContainerBuilder;
 use App\EventSyncTask;
+
+use Psr\Container\ContainerInterface;
+use App\Config;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\FilterHandler;
 
 try {
     $containerBuilder = new ContainerBuilder();
     // ... definiciones y construcción del contenedor...
     $containerBuilder->addDefinitions([
-    Psr\Log\LoggerInterface::class => function () {
-        $logger = new Monolog\Logger('app');
-        $logger->pushHandler(new Monolog\Handler\StreamHandler('php://stdout', Monolog\Logger::DEBUG));
-        return $logger;
-    }
-]);
+        Psr\Log\LoggerInterface::class => function (ContainerInterface $c) {
+            $config = $c->get(Config::class);
+            $logPath = $config->get('app.log_path');
+
+            $logger = new Logger('app');
+
+            // 1. Handler para INFO y WARNING en service.log
+            $infoHandler = new StreamHandler($logPath . '/service.log', Logger::INFO);
+            $logger->pushHandler(new FilterHandler(
+                $infoHandler,
+                Logger::INFO, // Nivel mínimo
+                Logger::WARNING  // Nivel máximo
+            ));
+
+            // 2. Handler para ERROR y CRITICAL en error.log
+            $errorHandler = new StreamHandler($logPath . '/error.log', Logger::ERROR);
+            $logger->pushHandler($errorHandler);
+
+            // 3. (Opcional) Mantener el log en la consola para debugging
+            $logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
+
+            return $logger;
+        }
+    ]);
     $container = $containerBuilder->build();
 
     // Instancia principal de la aplicación
