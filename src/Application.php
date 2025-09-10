@@ -139,7 +139,7 @@ class Application
                     $this->logger->error("Error en el ciclo principal de la aplicación: " . $e->getMessage(), [
                         'file' => $e->getFile(),
                         'line' => $e->getLine(),
-                        // 'trace' => $e->getTraceAsString() // Descomentar para debugging detallado
+                        'trace' => $e->getTraceAsString() // Descomentar para debugging detallado
                     ]);
                     // Esperar un poco antes de reintentar en caso de error para no crear un bucle de fallos rápido.
                     \OpenSwoole\Coroutine::sleep(5);
