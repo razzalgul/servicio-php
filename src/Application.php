@@ -144,9 +144,9 @@ class Application
                     // 3. Realizar cálculos
                     $this->logger->debug("Realizando cálculos de producción...");
                     $calculatedMetrics = $this->calculator->calculateMetrics($dbData, $this->historicalData);
-                    $this->logger->info("porcentaje del dia.",$calculatedMetrics["pCumpDia"]);
-                    $this->logger->info("porcentaje del mes.",$calculatedMetrics["pCumpMes"]);
-                    $this->logger->info("porcentaje de la semana.",$calculatedMetrics["pCumpSemana"]);
+                    $this->logger->info("porcentaje del dia.",["dia"=> $calculatedMetrics["pCumpDia"]]);
+                    $this->logger->info("porcentaje de la semana.",["semana"=> $calculatedMetrics["pCumpSemana"]]);
+                    $this->logger->info("porcentaje del dia.",["mes"=> $calculatedMetrics["pCumpMes"]]);
 
                     // 4. Preparar el payload final como un objeto plano tag=>valor
                     $payload = array_merge($liveData, $calculatedMetrics);
