@@ -48,7 +48,7 @@ try {
     $dbService = $container->get(App\DataBaseService::class);
     $logger = $container->get(Psr\Log\LoggerInterface::class);
     $config = $container->get(App\Config::class);
-    $eventApiUrl = $config->get(App\Config::class);
+    //$eventApiUrl = $config->get(App\Config::class);
     $tagRepo = $container->get(App\TagRepository::class);
 
     $eventTask = new EventSyncTask($dbService, $logger, $config,$tagRepo);

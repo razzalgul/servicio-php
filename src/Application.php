@@ -8,6 +8,13 @@ use Throwable;
 class Application
 {
     private int $tickInterval;
+    private ?\DateTimeImmutable $lastInicioSemana = null;
+    private ?\DateTimeImmutable $lastInicioMes = null;
+    private array $datosInicioSemana = [];
+    private array $datosInicioMes = [];
+    private ?int $lastInicioTurnoTimestamp = null;
+    private array $historicalData = [];
+
 
     public function __construct(
         private Config $config,
@@ -89,21 +96,57 @@ class Application
 
                     $now = new \DateTimeImmutable();
                     $shiftTimestamps = $this->calculator->getShiftTimestamps($now);
-                    // El día de producción anterior comenzó 24 horas (86400s) antes del inicio del día actual.
-                    $startOfPreviousDay = date('Y-m-d H:i:s', $shiftTimestamps['inicioDia'] - 86400);
+
+
+                    // La semana  comienza el lunes a las 8:00 AM.
+                    // Si hoy es lunes antes de las 8 AM, el inicio de semana fue el lunes pasado.
+                    if ((int)$now->format('N') === 1 && (int)$now->format('G') < 8) {
+                        $inicioSemana = $now->modify('last monday')->setTime(8, 0, 0);
+                    } else {
+                        $inicioSemana = $now->modify('monday this week')->setTime(8, 0, 0);
+                    }
+
+                    // El "mes laboral" comienza el primer día del mes a las 8:00 AM.
+                    $inicioMes = $now->modify('first day of this month')->setTime(8, 0, 0);
+
+                    // Solo consultar si el inicio de semana ha cambiado desde la última vez.
+                    if ($this->lastInicioSemana === null || $this->lastInicioSemana->getTimestamp() !== $inicioSemana->getTimestamp()) {
+                        $this->logger->info("Detectado nuevo inicio de semana. Obteniendo datos históricos para: " . $inicioSemana->format('Y-m-d H:i:s'));
+                        $this->datosInicioSemana = $this->dbService->getHistoricalValues($historicalCalculationTags, $inicioSemana->format('Y-m-d H:i:s'));
+                        $this->lastInicioSemana = $inicioSemana;
+                        $this->logger->info("Datos de inicio de semana actualizados.", ['tags' => $this->datosInicioSemana]);
+                    }
+
+
+                    if ($this->lastInicioMes === null || $this->lastInicioMes->getTimestamp() !== $inicioMes->getTimestamp()) {
+                        $this->logger->info("Detectado nuevo inicio de mes. Obteniendo datos históricos para: " . $inicioMes->format('Y-m-d H:i:s'));
+                        $this->datosInicioMes = $this->dbService->getHistoricalValues($historicalCalculationTags, $inicioMes->format('Y-m-d H:i:s'));
+                        $this->lastInicioMes = $inicioMes;
+                        $this->logger->info("Datos de inicio de mes actualizados.", ['tags' => $this->datosInicioMes]);
+                    }
+
+
+                    // Solo consultar si el timestamp de inicio de turno ha cambiado.
+                    if ($this->lastInicioTurnoTimestamp !== $shiftTimestamps['inicioTurno']) {
+                        $this->logger->info("Detectado nuevo turno. Obteniendo datos históricos...");
+                        $startOfPreviousDay = date('Y-m-d H:i:s', $shiftTimestamps['inicioDia'] - 86400);
+
+                        $this->historicalData = [
+                            'inicioGuardia' => $this->dbService->getHistoricalValues($historicalCalculationTags, date('Y-m-d H:i:s', $shiftTimestamps['inicioTurno'])),
+                            'guardiaAnterior' => $this->dbService->getHistoricalValues($historicalCalculationTags, date('Y-m-d H:i:s', $shiftTimestamps['inicioTurnoAnterior'])),
+                            'guardiaDiaAnterior' => $this->dbService->getHistoricalValues($historicalCalculationTags, $startOfPreviousDay),
+                        ];
+                        $this->lastInicioTurnoTimestamp = $shiftTimestamps['inicioTurno'];
+                        $this->logger->info("Datos históricos de turno actualizados.", $this->historicalData);
+                    }
+
 
                     $dbData = $this->dbService->getLiveValues();
                     $liveData = $this->filtrarTags($dbData, $apiTags);
 
-                    $historicalData = [
-                        'inicioGuardia' => $this->dbService->getHistoricalValues($historicalCalculationTags, date('Y-m-d H:i:s', $shiftTimestamps['inicioTurno'])),
-                        'guardiaAnterior' => $this->dbService->getHistoricalValues($historicalCalculationTags, date('Y-m-d H:i:s', $shiftTimestamps['inicioTurnoAnterior'])),
-                        'guardiaDiaAnterior' => $this->dbService->getHistoricalValues($historicalCalculationTags, $startOfPreviousDay),
-                    ];
-
                     // 3. Realizar cálculos
                     $this->logger->debug("Realizando cálculos de producción...");
-                    $calculatedMetrics = $this->calculator->calculateMetrics($dbData, $historicalData);
+                    $calculatedMetrics = $this->calculator->calculateMetrics($dbData, $this->historicalData);
                     // 4. Preparar el payload final como un objeto plano tag=>valor
                     $payload = array_merge($liveData, $calculatedMetrics);
                     $payload = $this->roundValues($payload);
