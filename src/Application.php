@@ -116,7 +116,7 @@ class Application
                         $this->lastInicioSemana = $inicioSemana;
                         $this->logger->info("Datos de inicio de semana actualizados.", ['tags' => $this->datosInicioSemana]);
                     }
-
+                    $this->logger->info("No ha cambiado el inicio de semana");
 
                     if ($this->lastInicioMes === null || $this->lastInicioMes->getTimestamp() !== $inicioMes->getTimestamp()) {
                         $this->logger->info("Detectado nuevo inicio de mes. Obteniendo datos históricos para: " . $inicioMes->format('Y-m-d H:i:s'));
@@ -124,7 +124,7 @@ class Application
                         $this->lastInicioMes = $inicioMes;
                         $this->logger->info("Datos de inicio de mes actualizados.", ['tags' => $this->datosInicioMes]);
                     }
-
+                    $this->logger->info("No ha cambiado el inicio de mes");
 
                     // Solo consultar si el timestamp de inicio de turno ha cambiado.
                     if ($this->lastInicioTurnoTimestamp !== $shiftTimestamps['inicioTurno']) {
@@ -139,7 +139,7 @@ class Application
                         $this->lastInicioTurnoTimestamp = $shiftTimestamps['inicioTurno'];
                         $this->logger->info("Datos históricos de turno actualizados.", $this->historicalData);
                     }
-
+                    $this->logger->info("No ha cambiado el inicio de turno");
 
                     $dbData = $this->dbService->getLiveValues();
                     $liveData = $this->filtrarTags($dbData, $apiTags);
