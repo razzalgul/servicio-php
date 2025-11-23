@@ -103,9 +103,9 @@ class ProductionCalculator
 
         // Producción actual del día ya está en $calculations['tonelajeActualDia']
 
-        $calculations['pCumpDia'] = $metaDiaria > 0 ? ($calculations['tonelajeActualDia'] / $metaDiaria) * 100 : 0;
-        $calculations['pCumpSemana'] = $metaSemanal > 0 ? ($produccionActualSemana / $metaSemanal) * 100 : 0;
-        $calculations['pCumpMes'] = $this->metaMes > 0 ? ($produccionActualMes / $this->metaMes) * 100 : 0;
+        $calculations['pCumpDia'] = round($metaDiaria > 0 ? ($calculations['tonelajeActualDia'] / $metaDiaria) * 100 : 0, 2);
+        $calculations['pCumpSemana'] = round($metaSemanal > 0 ? ($produccionActualSemana / $metaSemanal) * 100 : 0, 2);
+        $calculations['pCumpMes'] = round($this->metaMes > 0 ? ($produccionActualMes / $this->metaMes) * 100 : 0, 2);
 
 
         // Conteo de filtros activos
