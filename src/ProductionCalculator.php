@@ -10,11 +10,13 @@ class ProductionCalculator
     private const TON_ENVIO_FAJA0_DISENO_PER_SEC = 0.5469;
     private const POWER_MOLINO_MAX = 8500;
 
+    private int $metaMes = 900053;
+
     /**
      * Calcula todas las métricas de producción basadas en datos en vivo e históricos.
      *
      * @param array $liveData Datos en tiempo real de la tabla Live.
-     * @param array $historicalData Datos históricos de los inicios de turno.
+     * @param array $historicalData Datos históricos de los inicios de turno, semana y mes.
      * @return array Un array asociativo con todas las métricas calculadas.
      */
 
@@ -85,8 +87,26 @@ class ProductionCalculator
         $calculations['porcentajeMolino1002'] = round((($liveData['5740_BM1002.M101_POW'] ?? 0) / self::POWER_MOLINO_MAX) * 100, 2);
         $calculations['porcentajeMolino2001'] = round((($liveData['5740_BM2001.M101_POW'] ?? 0) / self::POWER_MOLINO_MAX) * 100, 2);
         $calculations['porcentajeMolino2002'] = round((($liveData['5740_BM2002.M101_POW'] ?? 0) / self::POWER_MOLINO_MAX) * 100, 2);
-        $calculations['produccion_l1'] = $liveData['WCT1741.Value'] - $tonelajeInicioDia['WCT1741.Value'];
-        $calculations['produccion_l2'] = $liveData['WCT2741.Value'] - $tonelajeInicioDia['WCT2741.Value'];
+        $calculations['produccion_l1'] = ($liveData['WCT1741.Value'] ?? 0) - ($tonelajeInicioDia['WCT1741.Value'] ?? 0);
+        $calculations['produccion_l2'] = ($liveData['WCT2741.Value'] ?? 0) - ($tonelajeInicioDia['WCT2741.Value'] ?? 0);
+
+        // --- 8. Porcentaje de Cumplimiento vs. Metas ---
+        $diasDelMes = (int)$now->format('t');
+        $metaDiaria = $diasDelMes > 0 ? $this->metaMes / $diasDelMes : 0;
+        $metaSemanal = $diasDelMes > 0 ? ($this->metaMes / $diasDelMes) * 7 : 0;
+
+        // Producción actual del mes
+        $produccionActualMes = (($liveData['WCT1741.Value'] ?? 0) + ($liveData['WCT2741.Value'] ?? 0)) - (($historicalData['inicioMes']['WCT1741.Value'] ?? 0) + ($historicalData['inicioMes']['WCT2741.Value'] ?? 0));
+
+        // Producción actual de la semana
+        $produccionActualSemana = (($liveData['WCT1741.Value'] ?? 0) + ($liveData['WCT2741.Value'] ?? 0)) - (($historicalData['inicioSemana']['WCT1741.Value'] ?? 0) + ($historicalData['inicioSemana']['WCT2741.Value'] ?? 0));
+
+        // Producción actual del día ya está en $calculations['tonelajeActualDia']
+
+        $calculations['pCumpDia'] = $metaDiaria > 0 ? ($calculations['tonelajeActualDia'] / $metaDiaria) * 100 : 0;
+        $calculations['pCumpSemana'] = $metaSemanal > 0 ? ($produccionActualSemana / $metaSemanal) * 100 : 0;
+        $calculations['pCumpMes'] = $this->metaMes > 0 ? ($produccionActualMes / $this->metaMes) * 100 : 0;
+
 
         // Conteo de filtros activos
         $filtros_l1 = 0;
