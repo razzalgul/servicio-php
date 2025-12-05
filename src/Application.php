@@ -52,7 +52,8 @@ class Application
             } elseif (
                 str_contains($tag, 'LIT') ||
                 str_contains($tag, 'M_MudLevel') ||
-                str_contains($tag, 'Flow_')
+                str_contains($tag, 'Flow_')||
+                str_contains($tag,'pCump')
             ) {
                 $payloadRedondeado[$tag] = round($valor, 2);
             } else {
