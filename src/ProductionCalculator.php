@@ -10,7 +10,7 @@ class ProductionCalculator
     private const TON_ENVIO_FAJA0_DISENO_PER_SEC = 0.5469;
     private const POWER_MOLINO_MAX = 8500;
 
-    private int $metaMes = 900053;
+    private int $metaMes = 940057;
 
     /**
      * Calcula todas las métricas de producción basadas en datos en vivo e históricos.
