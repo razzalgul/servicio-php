@@ -147,9 +147,10 @@ class Application
                     $this->logger->info("porcentaje del dia.",["dia"=> $calculatedMetrics["pCumpDia"]]);
                     $this->logger->info("porcentaje de la semana.",["semana"=> $calculatedMetrics["pCumpSemana"]]);
                     $this->logger->info("porcentaje del dia.",["mes"=> $calculatedMetrics["pCumpMes"]]);
+
                     // 4. Preparar el payload final como un objeto plano tag=>valor
-                    $payload = $this->roundValues($liveData);
                     $payload = array_merge($liveData, $calculatedMetrics);
+                    $payload = $this->roundValues($payload);
                     $wsData = (object)[
                         'type' => 'data',
                         'payload' => $payload
