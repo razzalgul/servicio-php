@@ -10,7 +10,9 @@ class ProductionCalculator
     private const TON_ENVIO_FAJA0_DISENO_PER_SEC = 0.5469;
     private const POWER_MOLINO_MAX = 8500;
 
-    private int $metaMes = 900053;
+    private int $metaMes = 940057;
+    private int $metaSemana  = 231000;
+    private int $metaDia = 33000;
 
     /**
      * Calcula todas las métricas de producción basadas en datos en vivo e históricos.
@@ -36,6 +38,19 @@ class ProductionCalculator
         $segundosTurno = $now->getTimestamp() - $shiftTimes['inicioTurno'];
         $segundosDia = $now->getTimestamp() - $shiftTimes['inicioDia'];
 
+        // --- Cálculo de segundos transcurridos en semana y mes ---
+        // Lógica para inicio de semana (Lunes 8am)
+        if ((int)$now->format('N') === 1 && (int)$now->format('G') < 8) {
+            $inicioSemana = $now->modify('last monday')->setTime(8, 0, 0);
+        } else {
+            $inicioSemana = $now->modify('monday this week')->setTime(8, 0, 0);
+        }
+        $segundosSemana = $now->getTimestamp() - $inicioSemana->getTimestamp();
+
+        // Lógica para inicio de mes (Día 1, 8am)
+        $inicioMes = $now->modify('first day of this month')->setTime(8, 0, 0);
+        $segundosMes = $now->getTimestamp() - $inicioMes->getTimestamp();
+
         $calculations = [];
 
         // --- 1. Tonelajes de Diseño (Metas) ---
@@ -45,6 +60,8 @@ class ProductionCalculator
         $calculations['tonelajedisenoTurno'] = $segundosTurno * self::TON_PRODUCCION_DISENO_PER_SEC;
         $calculations['tonelajeFaja0DisenoTurno'] = $segundosTurno * self::TON_ENVIO_FAJA0_DISENO_PER_SEC;
         $calculations['tonelajeenviodisenoturno'] = $segundosTurno * self::TON_ENVIO_DISENO_PER_SEC;
+        $calculations['tonelajedisenoSemana'] = $segundosSemana * self::TON_PRODUCCION_DISENO_PER_SEC;
+        $calculations['tonelajedisenoMes'] = $segundosMes * self::TON_PRODUCCION_DISENO_PER_SEC;
 
         // --- 2. Tonelajes del Día Anterior (8am a 8am) ---
         $calculations['tonelajeDiaAnterior'] = ($tonelajeInicioDia['WCT1741.Value'] + $tonelajeInicioDia['WCT2741.Value']) - ($historicalData['guardiaDiaAnterior']['WCT1741.Value'] + $historicalData['guardiaDiaAnterior']['WCT2741.Value']);
@@ -78,6 +95,12 @@ class ProductionCalculator
         $calculations['diferenciaproducciondia'] = $calculations['tonelajeActualDia'] - $calculations['tonelajedisenodia'];
         $calculations['diferenciaenviodia'] = $calculations['tonelajeEnvioActualDia'] - $calculations['tonelajeenviodisenodia'];
         $calculations['diferenciaTonelajeFaja0Dia'] = $calculations['tonelajeFaja0ActualDia'] - $calculations['tonelajeFaja0Disenodia'];
+        // Variación de la semana y mes
+        $produccionActualSemana = (($liveData['WCT1741.Value'] ?? 0) + ($liveData['WCT2741.Value'] ?? 0)) - (($historicalData['inicioSemana']['WCT1741.Value'] ?? 0) + ($historicalData['inicioSemana']['WCT2741.Value'] ?? 0));
+        $produccionActualMes = (($liveData['WCT1741.Value'] ?? 0) + ($liveData['WCT2741.Value'] ?? 0)) - (($historicalData['inicioMes']['WCT1741.Value'] ?? 0) + ($historicalData['inicioMes']['WCT2741.Value'] ?? 0));
+        $calculations['diferenciaproduccionsemana'] = $produccionActualSemana - $calculations['tonelajedisenoSemana'];
+        $calculations['diferenciaproduccionmes'] = $produccionActualMes - $calculations['tonelajedisenoMes'];
+
 
         // --- 7. Cálculos Adicionales de Proceso ---
         $calculations['presion_procesos_l1'] = max($liveData['PIT0922A.IO.Value'] ?? 0, $liveData['PIT0922B.IO.Value'] ?? 0, $liveData['PIT0922C.IO.Value'] ?? 0);
@@ -92,19 +115,12 @@ class ProductionCalculator
 
         // --- 8. Porcentaje de Cumplimiento vs. Metas ---
         $diasDelMes = (int)$now->format('t');
-        $metaDiaria = $diasDelMes > 0 ? $this->metaMes / $diasDelMes : 0;
-        $metaSemanal = $diasDelMes > 0 ? ($this->metaMes / $diasDelMes) * 7 : 0;
 
-        // Producción actual del mes
-        $produccionActualMes = (($liveData['WCT1741.Value'] ?? 0) + ($liveData['WCT2741.Value'] ?? 0)) - (($historicalData['inicioMes']['WCT1741.Value'] ?? 0) + ($historicalData['inicioMes']['WCT2741.Value'] ?? 0));
-
-        // Producción actual de la semana
-        $produccionActualSemana = (($liveData['WCT1741.Value'] ?? 0) + ($liveData['WCT2741.Value'] ?? 0)) - (($historicalData['inicioSemana']['WCT1741.Value'] ?? 0) + ($historicalData['inicioSemana']['WCT2741.Value'] ?? 0));
 
         // Producción actual del día ya está en $calculations['tonelajeActualDia']
 
-        $calculations['pCumpDia'] = round($metaDiaria > 0 ? ($calculations['tonelajeActualDia'] / $metaDiaria) * 100 : 0, 2);
-        $calculations['pCumpSemana'] = round($metaSemanal > 0 ? ($produccionActualSemana / $metaSemanal) * 100 : 0, 2);
+        $calculations['pCumpDia'] = round($this->metaDia >0? ($calculations['tonelajeActualDia'] / $this->metaDia)* 100 : 0, 2);
+        $calculations['pCumpSemana'] = round($this->metaSemana >0 ? ($produccionActualSemana / $this->metaSemana) * 100 : 0, 2);
         $calculations['pCumpMes'] = round($this->metaMes > 0 ? ($produccionActualMes / $this->metaMes) * 100 : 0, 2);
 
 
