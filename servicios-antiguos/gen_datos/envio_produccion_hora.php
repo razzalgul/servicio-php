@@ -21,46 +21,47 @@ function conexion()
 $conn = conexion();
 
 $prevHour = date('Y-m-d H:i:00',strtotime('-1 hour'));
-$queryTotalNow = "SELECT TagName, Value from Runtime.dbo.AnalogLive WHERE TagName IN ('WCT1741.Value','WCT2741.Value')";
-$queryTotalPrev = "SELECT TagName, Value from Runtime.dbo.AnalogHistory WHERE TagName IN ('WCT1741.Value','WCT2741.Value') AND DateTime = '$prevHour'";
 
-
-
-$stmt = sqlsrv_query($conn, $queryTotalNow);
-if ($stmt === false) {
-    echo "Mala consulta";
-    die(print_r(sqlsrv_errors(), true));
+// 1. Obtener valores actuales
+$queryNow = "SELECT TagName, Value FROM Runtime.dbo.AnalogLive WHERE TagName IN ('WCT1741.Value','WCT2741.Value')";
+$stmtNow = sqlsrv_query($conn, $queryNow);
+$currentValues = [];
+while ($row = sqlsrv_fetch_array($stmtNow, SQLSRV_FETCH_ASSOC)) {
+    $currentValues[$row['TagName']] = $row['Value'];
 }
 
-$raw_data = new stdClass();
-
-while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
-  
-  $raw_data->{$row['TagName']} = $row['Value'];
-
+// 2. Obtener valores de la hora anterior
+$queryPrev = "SELECT TagName, Value FROM Runtime.dbo.AnalogHistory WHERE TagName IN ('WCT1741.Value','WCT2741.Value') AND DateTime = '$prevHour'";
+$stmtPrev = sqlsrv_query($conn, $queryPrev);
+$previousValues = [];
+while ($row = sqlsrv_fetch_array($stmtPrev, SQLSRV_FETCH_ASSOC)) {
+    $previousValues[$row['TagName']] = $row['Value'];
 }
 
+// 3. Calcular la cantidad para cada línea, si ambos valores existen. Si no, es 0.
+$quantityL1 = 0;
+if (isset($currentValues['WCT1741.Value']) && isset($previousValues['WCT1741.Value'])) {
+    $quantityL1 = $currentValues['WCT1741.Value'] - $previousValues['WCT1741.Value'];
+} else {
+    echo "Advertencia: No se encontró valor actual o histórico para WCT1741.Value. Enviando 0.".PHP_EOL;
+}
 
-$stmt = sqlsrv_query($conn, $queryTotalPrev);
-
-while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
-
-  $raw_data->{$row['TagName']} = $raw_data->{$row['TagName']} - $row['Value'];
+$quantityL2 = 0;
+if (isset($currentValues['WCT2741.Value']) && isset($previousValues['WCT2741.Value'])) {
+    $quantityL2 = $currentValues['WCT2741.Value'] - $previousValues['WCT2741.Value'];
+} else {
+    echo "Advertencia: No se encontró valor actual o histórico para WCT2741.Value. Enviando 0.".PHP_EOL;
 }
 
 $postData = [];
-
 $lineOneHourlyData = new stdClass();
-
-$lineOneHourlyData->quantity = $raw_data->{"WCT1741.Value"};
+$lineOneHourlyData->quantity = $quantityL1;
 $lineOneHourlyData->productionLineId = 1;
 $lineOneHourlyData->date = $prevHour;
-
 array_push($postData, $lineOneHourlyData);
 
 $lineTwoHourlyData = new stdClass();
-
-$lineTwoHourlyData->quantity = $raw_data->{"WCT2741.Value"};
+$lineTwoHourlyData->quantity = $quantityL2;
 $lineTwoHourlyData->productionLineId = 2;
 $lineTwoHourlyData->date = $prevHour;
 array_push($postData, $lineTwoHourlyData);

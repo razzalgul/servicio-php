@@ -25,38 +25,30 @@ $conn = conexion();
 $actualDate = date("Y-m-d H:i:00");
 $prevHourDate = date('Y-m-d H:i:00',strtotime('-1 hour'));
 $prevHourDateObject =date_create($prevHourDate);
-
-$queryTotalNow = "SELECT TagName, Value from Runtime.dbo.AnalogLive WHERE TagName = 'WCT0303.Value'";
-#$queryTotalPrev = "SELECT TagName, DateTime, Value from Runtime.dbo.AnalogHistory WHERE TagName = 'WCT0303.Value' AND DateTime = DATEADD(DAY,-1,GETDATE())";
-$queryTotalPrev = "SELECT TagName, DateTime, Value from Runtime.dbo.AnalogHistory WHERE TagName = 'WCT0303.Value' AND DateTime = '$prevHourDate'";
-
-$stmt = sqlsrv_query($conn, $queryTotalNow);
-if ($stmt === false) {
-  echo "Mala consulta now";
-  die(print_r(sqlsrv_errors(), true));
-}
-
-$raw_data = new stdClass();
-
-while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
-  
-  $raw_data->{$row['TagName']} = $row['Value'];
-  
-}
-
-$stmt = sqlsrv_query($conn, $queryTotalPrev);
-if ($stmt === false) {
-  echo "Mala consulta prev";
-  die(print_r(sqlsrv_errors(), true));
-}
-
-while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
-  $raw_data->{$row['TagName']} = $raw_data->{$row['TagName']} - $row['Value'];
-}
-
 $plantFeed = new stdClass();
 $plantFeed->date = $prevHourDate;
-$plantFeed->quantity = $raw_data->{'WCT0303.Value'};
+
+// 1. Obtener valor actual
+$queryNow = "SELECT Value FROM Runtime.dbo.AnalogLive WHERE TagName = 'WCT0303.Value'";
+$stmtNow = sqlsrv_query($conn, $queryNow);
+$rowNow = sqlsrv_fetch_array($stmtNow, SQLSRV_FETCH_ASSOC);
+$currentValue = ($rowNow !== null) ? $rowNow['Value'] : null;
+
+// 2. Obtener valor de la hora anterior
+$queryPrev = "SELECT Value FROM Runtime.dbo.AnalogHistory WHERE TagName = 'WCT0303.Value' AND DateTime = '$prevHourDate'";
+$stmtPrev = sqlsrv_query($conn, $queryPrev);
+$rowPrev = sqlsrv_fetch_array($stmtPrev, SQLSRV_FETCH_ASSOC);
+$previousValue = ($rowPrev !== null) ? $rowPrev['Value'] : null;
+
+// 3. Calcular la cantidad, si ambos valores existen. Si no, es 0.
+$hourlyQuantity = 0;
+if ($currentValue !== null && $previousValue !== null) {
+    $hourlyQuantity = $currentValue - $previousValue;
+} else {
+    echo "Advertencia: No se encontró valor actual o histórico para WCT0303.Value. Enviando 0.".PHP_EOL;
+}
+
+$plantFeed->quantity = $hourlyQuantity;
 
 $postData =json_encode($plantFeed);
 
@@ -121,4 +113,3 @@ echo "Mensaje del servidor: " .$codigoRespuesta."respuesta: ".$resultado.PHP_EOL
 
 
 ?>
-
