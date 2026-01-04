@@ -53,7 +53,8 @@ class Application
                 str_contains($tag, 'LIT') ||
                 str_contains($tag, 'M_MudLevel') ||
                 str_contains($tag, 'Flow_')||
-                str_contains($tag,'pCump')
+                str_contains($tag,'pCump') ||
+                str_contains($tag, 'LT00')
             ) {
                 $payloadRedondeado[$tag] = round($valor, 2);
             } else {
