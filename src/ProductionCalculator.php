@@ -13,6 +13,7 @@ class ProductionCalculator
     private int $metaMes = 940057;
     private int $metaSemana  = 231000;
     private int $metaDia = 33000;
+    private int $metaAnual = 1050000;
 
     /**
      * Calcula todas las métricas de producción basadas en datos en vivo e históricos.
