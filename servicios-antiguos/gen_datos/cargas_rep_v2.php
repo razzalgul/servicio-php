@@ -5,12 +5,11 @@
 date_default_timezone_set('America/Lima');
 $hztorpm =(1786/1000);
 function conexion(){
-	
-$serverName = "172.16.0.244"; //gr_history
-	//$serverName = "172.16.0.72";  //gr
+
+	$serverName = "172.16.12.51"; // GRHISTORY
 
 	//$connectionOptions = array(“Database” => “Runtime”);
-	$connectionOptions = array("Database"=>"master","Uid"=>"ccruser", "PWD"=>"ccruser@2019","MultipleActiveResultSets"=>"0","TrustServerCertificate"=>true);
+	$connectionOptions = array("Database"=>"master","Uid"=>"wsuser", "PWD"=>"ccr.ADMIN2027","MultipleActiveResultSets"=>"0","TrustServerCertificate"=>true);
 	$conn = sqlsrv_connect( $serverName,$connectionOptions);
 	if( $conn === false ){
 		echo "Habilitar para conectar. \n";
@@ -40,8 +39,16 @@ function ConsultaDB(){
 	//$fecha = date('Y-m-d g:i:sa');
 
 	$sql = "SELECT TagName, round(AVG(Value),2) as pvalor from Runtime.dbo.History WHERE TagName IN
-   ('5730_PU0001_rev1.frecuencyRpm','5730_PU0002_rev1.frecuencyRpm','5730_PU0003_rev1.frecuencyRpm','5730_PU0004_rev1.frecuencyRpm','5730_PU0001.status.TotalCurrent',
-   '5730_PU0002.status.TotalCurrent','5730_PU0003.status.TotalCurrent','5730_PU0004.status.TotalCurrent','FIT1301.IO.Value','FIT2301.IO.Value',
+   ('5730_PU0001_rev1.frecuencyRpm',
+	 '5730_PU0002_rev1.frecuencyRpm',
+	 '5730_PU0003_rev1.frecuencyRpm',
+	 '5730_PU0004_rev1.frecuencyRpm',
+	 '5730_PU0001_rev1.status.TotalCurrent',
+   '5730_PU0002_rev1.status.TotalCurrent',
+	 '5730_PU0003_rev1.status.TotalCurrent',
+	 '5730_PU0004_rev1.status.TotalCurrent',
+	 
+	 'FIT1301.IO.Value','FIT2301.IO.Value',
 	  'WIT0303.IO.Value',
 		'WIT0304.IO.Value',
 		'5841_CB120.WIT',
@@ -54,7 +61,9 @@ function ConsultaDB(){
 		'FIT0962.IO.Value',
 		'FIT0963.IO.Value',
 		'FIT1801.IO.Value',
+		'FIT1802.IO.Value',
 		'FIT2801.IO.Value',
+		'FIT2802.IO.Value',
 
 		'5780_MX1001.status.Iavg',
 		'5780_MX2001.status.Iavg',
@@ -71,16 +80,26 @@ function ConsultaDB(){
 		'Shouxin_601_PIT_016.Value',
 		'Shouxin_601_PIT_017.Value',
 		'Shouxin_601_PIT_018.Value',
-		'DIT1801.IO.Value',
 
-		'5780_PU1001.Status.FrequencyPv',
-		'5780_PU1001.Status.Current',
-		'5780_PU1002.Status.FrequencyPv',
-		'5780_PU1002.Status.Current',
-		'5780_PU2001.Status.FrequencyPv',
-		'5780_PU2001.Status.Current',
-		'5780_PU2002.Status.FrequencyPv',
-		'5780_PU2002.Status.Current',
+		'DIT1801.IO.Value',
+		'DIT1802.FMIT',
+		'DIT2801.FMIT',
+		'DIT2802.FMIT',
+
+		'DIT1802.SIT',
+		'DIT2801.SIT',
+		'DIT2802.SIT',
+
+		'5780_PU1001_rev1.Status.SpeedPv',
+		'5780_PU1001_rev1.Status.Current',
+		'5780_PU1002_rev1.Status.SpeedPv',
+		'5780_PU1002_rev1.Status.Current',
+		'5780_PU2001_rev1.Status.SpeedPv',
+		'5780_PU2001_rev1.Status.Current',
+		'5780_PU2002_rev1.Status.SpeedPv',
+		'5780_PU2002_rev1.Status.Current',
+
+
 
 		'WIT1741.IO.Value',
 		'WIT2741.IO.Value',
@@ -118,10 +137,10 @@ function ConsultaDB(){
 
   $query = "INSERT INTO datosc2 (id, fecha, hora, linea, modo, frec, amp, sol, flujo, ton) VALUES ";
 	$query2 = "INSERT INTO datos_repdia (id, fecha, hora, WIT0304_IO_Value, p5841_CB120_WIT, p5841_CB120_M103_Alarm_M_II,
-	p5730_CB0001_Current1M_IO_Value, p5730_CB0003_status_Iavg, flujo_1001, flujo_2001, FIT0963_IO_Value, FIT0962_IO_Value, relmodol1, sol_rel1,
-	FIT1801_IO_Value, ton_rel1, amp_rel1, frec_rel1, relmodol2, sol_rel2, FIT2801_IO_Value, ton_rel2, amp_rel2, frec_rel2,
-	p5780_MX1001_status_Iavg, p5780_MX2001_status_Iavg, LIT1803_IO_Value, LIT2803_IO_Value, frecba_shoux, frecbb_shoux, frecbc_shoux,
-	Shouxin_601_PIT_018_Value, Shouxin_601_PIT_017_Value, Shouxin_601_PIT_016_Value, relmallal1, relmallal2, DIT1801_IO_alue, WCT5841, WCT0303, WIT0303_IO_Value,BM1001_Pow,BM1002_Pow,BM2001_Pow,BM2002_Pow, N1920_FIT0001_IO_Value) VALUES ";
+	p5730_CB0001_Current1M_IO_Value, p5730_CB0003_status_Iavg, flujo_1001, flujo_2001, FIT0963_IO_Value, FIT0962_IO_Value, 
+	relmodol1, sol_rel1, FIT1801_IO_Value, ton_rel1, amp_rel1, frec_rel1, 
+	relmodol2, sol_rel2, FIT2801_IO_Value, ton_rel2, amp_rel2, frec_rel2, 
+	p5780_MX1001_status_Iavg, p5780_MX2001_status_Iavg, LIT1803_IO_Value, LIT2803_IO_Value, frecba_shoux, frecbb_shoux, frecbc_shoux, Shouxin_601_PIT_018_Value, Shouxin_601_PIT_017_Value, Shouxin_601_PIT_016_Value, relmallal1, relmallal2, DIT1801_IO_alue, WCT5841, WCT0303, WIT0303_IO_Value,BM1001_Pow,BM1002_Pow,BM2001_Pow,BM2002_Pow, N1920_FIT0001_IO_Value) VALUES ";
   //$mfecha = date('Y-m-d H:i:s');
   //$mhora = date('H:i');
 
@@ -135,21 +154,35 @@ function ConsultaDB(){
     //modo disenio
 
     $frec = (int)$jsondecode["5730_PU0001_rev1.frecuencyRpm"];
-    $amp = $jsondecode["5730_PU0001.status.TotalCurrent"];
+    $amp = $jsondecode["5730_PU0001_rev1.status.TotalCurrent"];
     $flow = (int)$jsondecode["FIT1301.IO.Value"];
 		$sol_l1 = (int)$jsondecode["DIT1001_TV_Densidad.IO.Value"];
 		$ton_l1 = (int)$jsondecode["DIT1001_PV.IO.Value"];
     $query .= "(NULL, '$mfecha', '$mhora', '1', '1', '$frec', '". str_replace( ',', '.', $amp). "', '$sol_l1', '$flow', '$ton_l1')";
-
 		$frec_z_l1 = $frec;
 		$amp_z_l1 = $amp;
 		$flow_z_l1 = $flow;
 		$modo_l1=1;
 
-  }else if($jsondecode["5730_PU0002_rev1.frecuencyRpm"] > 360){
+  }
+	elseif ($jsondecode["5730_PU0002_rev1.frecuencyRpm"] > 1200 && $jsondecode["FIT1301.IO.Value"] > 700 && $jsondecode["5730_PU0001_rev1.frecuencyRpm"] < 1000){
+		//modo diseno con bomba 2
+		$frec = (int)$jsondecode["5730_PU0002_rev1.frecuencyRpm"];
+		$amp = $jsondecode["5730_PU0002_rev1.status.TotalCurrent"];
+		$flow = (int)$jsondecode["FIT1301.IO.Value"];
+		$sol_l1 = (int)$jsondecode["DIT1001_TV_Densidad.IO.Value"];
+		$ton_l1 = (int)$jsondecode["DIT1001_PV.IO.Value"];
+    $query .= "(NULL, '$mfecha', '$mhora', '1', '1', '$frec', '". str_replace( ',', '.', $amp). "', '$sol_l1', '$flow', '$ton_l1')";
+		$frec_z_l1 = $frec;
+		$amp_z_l1 = $amp;
+		$flow_z_l1 = $flow;
+		$modo_l1=1;
+	
+	}
+	else if($jsondecode["5730_PU0002_rev1.frecuencyRpm"] > 360){
     //modo modificado
     $frec = (int)$jsondecode["5730_PU0002_rev1.frecuencyRpm"];
-    $amp = $jsondecode["5730_PU0002.status.TotalCurrent"];
+    $amp = $jsondecode["5730_PU0002_rev1.status.TotalCurrent"];
     $query .= "(NULL, '$mfecha', '$mhora', '1', '2', '$frec', '". str_replace( ',', '.', $amp). "', NULL, NULL, NULL)";
 
 		$frec_z_l1 = $frec;
@@ -158,7 +191,7 @@ function ConsultaDB(){
 
   }else{
 		$frec = (int)$jsondecode["5730_PU0002_rev1.frecuencyRpm"];
-    $amp = $jsondecode["5730_PU0002.status.TotalCurrent"];
+    $amp = $jsondecode["5730_PU0002_rev1.status.TotalCurrent"];
 	//parado
 	//$value =1.23;		//'". str_replace( ',', '.', $value ). "'
 		$frec_z_l1 = $frec;
@@ -171,22 +204,34 @@ function ConsultaDB(){
   if($jsondecode["5730_PU0003_rev1.frecuencyRpm"] > 1200 && $jsondecode["5730_PU0004_rev1.frecuencyRpm"] < 750){
     //modo disenio
     $frec = (int)$jsondecode["5730_PU0003_rev1.frecuencyRpm"];
-    $amp = $jsondecode["5730_PU0003.status.TotalCurrent"];
+    $amp = $jsondecode["5730_PU0003_rev1.status.TotalCurrent"];
     $flow = (int)$jsondecode["FIT2301.IO.Value"];
 		$sol_l2 = (int)$jsondecode["DIT2001_TV_Densidad.IO.Value"];
 		$ton_l2 = (int)$jsondecode["DIT2001_PV.IO.Value"];
     $query .= ",(NULL, '$mfecha', '$mhora', '2', '1', '$frec', '". str_replace( ',', '.', $amp). "','$sol_l2', '$flow', '$ton_l2')";
-
 		$frec_z_l2 = $frec;
 		$amp_z_l2 = $amp;
 		$flow_z_l2 = $flow;
 		$modo_l2=1;
 
 
-  }else if($jsondecode["5730_PU0004_rev1.frecuencyRpm"] > 360){
+  }else if($jsondecode["5730_PU0004_rev1.frecuencyRpm"] > 1000 && $jsondecode["FIT2301.IO.Value"] > 700 && $jsondecode["5730_PU0003_rev1.frecuencyRpm"] < 1000){
+		//modo diseno con bomba 4
+		$frec = (int)$jsondecode["5730_PU0004_rev1.frecuencyRpm"];
+		$amp = $jsondecode["5730_PU0004_rev1.status.TotalCurrent"];
+		$flow = (int)$jsondecode["FIT2301.IO.Value"];
+		$sol_l2 = (int)$jsondecode["DIT2001_TV_Densidad.IO.Value"];
+		$ton_l2 = (int)$jsondecode["DIT2001_PV.IO.Value"];
+		$query .= ",(NULL, '$mfecha', '$mhora', '2', '1', '$frec', '". str_replace( ',', '.', $amp). "','$sol_l2', '$flow', '$ton_l2')";
+		$flow_z_l2 = $flow;
+		$frec_z_l2 = $frec;
+		$amp_z_l2 = $amp;
+		$modo_l2=1;
+
+	} else if($jsondecode["5730_PU0004_rev1.frecuencyRpm"] > 360){
     //modo modificado
     $frec = (int)$jsondecode["5730_PU0004_rev1.frecuencyRpm"];
-    $amp = $jsondecode["5730_PU0004.status.TotalCurrent"];
+    $amp = $jsondecode["5730_PU0004_rev1.status.TotalCurrent"];
     $query .= ",(NULL, '$mfecha', '$mhora', '2', '2', '$frec', '". str_replace( ',', '.', $amp). "', NULL, NULL, NULL)";
 
 		$frec_z_l2 = $frec;
@@ -196,7 +241,7 @@ function ConsultaDB(){
   }else{
     //parado
 		$frec = (int)$jsondecode["5730_PU0004_rev1.frecuencyRpm"];
-    $amp = $jsondecode["5730_PU0004.status.TotalCurrent"];
+    $amp = $jsondecode["5730_PU0004_rev1.status.TotalCurrent"];
 		$frec_z_l2 = $frec;
 		$amp_z_l2 = $amp;
     $query .= ",(NULL, '$mfecha', '$mhora', '2', '3', '0', '0', NULL, NULL, NULL)";
@@ -204,7 +249,6 @@ function ConsultaDB(){
   }
 
 /// bd 2---------------------------------------------------------------------------
-
 
 	$WCT5841_Value = (int)$jsondecode["WCT5841WE120.Value"];
 	$WCT0303_Value = (int)$jsondecode["WCT0303.Value"];
@@ -214,24 +258,38 @@ function ConsultaDB(){
 	$p5841_CB120_M103_Alarm_M_II = (int)$jsondecode["5841_CB120_M103_Alarm.Current"];
 	$p5730_CB0001_Current1M_IO_Value = (int)$jsondecode["5730_CB0001_Current1M.IO.Value"];
 	$p5730_CB0003_status_Iavg = (int)$jsondecode["5730_CB0003.status.Iavg"];
-
 	$faja1001 = (int)$jsondecode["WIT1741.IO.Value"];
 	$faja2001 = (int)$jsondecode["WIT2741.IO.Value"];
 
 	$FIT0962_IO_Value = (int)$jsondecode["FIT0962.IO.Value"];
 	$FIT0963_IO_Value = (int)$jsondecode["FIT0963.IO.Value"];
-	$FIT1801_IO_Value = (int)$jsondecode["FIT1801.IO.Value"];
-	$FIT2801_IO_Value = (int)$jsondecode["FIT2801.IO.Value"];
 
-	$relpu1001_amp = (int)$jsondecode["5780_PU1001.Status.Current"];
-	$relpu1001_hz  = (int)$jsondecode["5780_PU1001.Status.FrequencyPv"];
-	$relpu1002_amp = (int)$jsondecode["5780_PU1002.Status.Current"];
-	$relpu1002_hz  = (int)	$jsondecode["5780_PU1002.Status.FrequencyPv"];
+// flujo de las bombas de relaves
+	$r_pu1001_flow = (int)$jsondecode["FIT1802.IO.Value"];
+	$r_pu1002_flow = (int)$jsondecode["FIT1801.IO.Value"];
+	$r_pu2001_flow = (int)$jsondecode["FIT2801.IO.Value"];
+	$r_pu2002_flow = (int)$jsondecode["FIT2802.IO.Value"];
 
-	$relpu2001_amp = (int)$jsondecode["5780_PU2001.Status.Current"];
-	$relpu2001_hz  = (int)$jsondecode["5780_PU2001.Status.FrequencyPv"];
-	$relpu2002_amp = (int)$jsondecode["5780_PU2002.Status.Current"];
-	$relpu2002_hz  = (int)$jsondecode["5780_PU2002.Status.FrequencyPv"];
+	// densimetros de relaves
+	$r_pu1001_tonnage = (int)$jsondecode["DIT1802.FMIT"];
+	$r_pu1002_tonnage = 'null';
+	$r_pu2001_tonnage = (int)$jsondecode["DIT2801.FMIT"];
+	$r_pu2002_tonnage = (int)$jsondecode["DIT2802.FMIT"];
+
+	$r_pu1001_sol = (int)$jsondecode["DIT1802.SIT"];
+	$r_pu1002_sol = 'null';
+	$r_pu2001_sol = (int)$jsondecode["DIT2801.SIT"];
+	$r_pu2002_sol = (int)$jsondecode["DIT2802.SIT"];
+
+	$relpu1001_amp = (int)$jsondecode["5780_PU1001_rev1.Status.Current"];
+	$relpu1001_hz  = (int)$jsondecode["5780_PU1001_rev1.Status.SpeedPv"];
+	$relpu1002_amp = (int)$jsondecode["5780_PU1002_rev1.Status.Current"];
+	$relpu1002_hz  = (int)$jsondecode["5780_PU1002_rev1.Status.SpeedPv"];
+
+	$relpu2001_amp = (int)$jsondecode["5780_PU2001_rev1.Status.Current"];
+	$relpu2001_hz  = (int)$jsondecode["5780_PU2001_rev1.Status.SpeedPv"];
+	$relpu2002_amp = (int)$jsondecode["5780_PU2002_rev1.Status.Current"];
+	$relpu2002_hz  = (int)$jsondecode["5780_PU2002_rev1.Status.SpeedPv"];
 
 	$p5780_MX1001_status_Iavg = (int)$jsondecode["5780_MX1001.status.Iavg"];
 	$p5780_MX2001_status_Iavg = (int)$jsondecode["5780_MX2001.status.Iavg"];
@@ -259,6 +317,12 @@ function ConsultaDB(){
 	$relmodol1;
 	$amp_rel1;
 	$frec_rel1;
+	$ton_rel1;
+	$ton_rel2;
+	$sol_rel1;
+	$sol_rel2;	
+	$flow_rel1;
+	$flow_rel2;
 	$relmodol2;
 	$amp_rel2;
 	$frec_rel2;
@@ -270,48 +334,64 @@ function ConsultaDB(){
 
 
 //relaves l1------------------------
-	if($relpu1002_amp>5 and $relpu1002_hz>6){
+	if($relpu1002_amp > 5 && $relpu1002_hz > 6){
 		//bomba 1002 ; con flujo
 		$relmodol1 = 1;
 		$amp_rel1 = $relpu1002_amp;
 		$frec_rel1 = $relpu1002_hz;
+		$flow_rel1 = $r_pu1002_flow;
+		$ton_rel1 = $r_pu1002_tonnage;
+		$sol_rel1 = $r_pu1002_sol;
 
-	}elseif($relpu1001_amp>5 and $relpu1001_hz>6){
+	}elseif($relpu1001_amp > 5 && $relpu1001_hz > 6){
 		// bomba 1001
 		$relmodol1 = 2;
 		$amp_rel1 = $relpu1001_amp;
 		$frec_rel1 = $relpu1001_hz;
+		$flow_rel1 = $r_pu1001_flow;
+		$ton_rel1 = $r_pu1001_tonnage;
+		$sol_rel1 = $r_pu1001_sol;
 
 	}else{
 		//bombas paradas
 		$relmodol1 = 3;
 		$amp_rel1 = 0;	// "";
 		$frec_rel1 = 0; // "";
+		$flow_rel1 = 0;	// "";
+		$ton_rel1 = 0;	// "";
 	}
 
 
 //relaves l2------------------------
-	if ($relpu2001_amp>5 and $relpu2001_hz>6){
+	if ($relpu2001_amp>5 && $relpu2001_hz>6){
 		// bomba 2001 ; con flujo
 		$relmodol2 = 1;
 		$amp_rel2 = $relpu2001_amp;
 		$frec_rel2 = $relpu2001_hz;
+		$flow_rel2 = $r_pu2001_flow;
+		$ton_rel2 = $r_pu2001_tonnage;
+		$sol_rel2 = $r_pu2001_sol;
 
-	}elseif($relpu2002_amp>5 and $relpu2002_hz>6){
-		//bomba 1002
+	}elseif($relpu2002_amp > 5 && $relpu2002_hz > 6){
+		//bomba 2002
 		$relmodol2 = 2;
 		$amp_rel2 = $relpu2002_amp;
 		$frec_rel2 = $relpu2002_hz;
+		$flow_rel2 = $r_pu2002_flow;
+		$ton_rel2 = $r_pu2002_tonnage;
+		$sol_rel2 = $r_pu2002_sol;
 
 	}else{
 		//bombas paradas
 		$relmodol2 = 3;
 		$amp_rel2 = 0;	// "";
 		$frec_rel2 = 0;	// "";
+		$flow_rel2 = 0;	// "";
+		$ton_rel2 = 0;	// "";
 	}
 
   $query2 .= "(NULL, '$mfecha', '$mhora', '$WIT0304_IO_Value', '$p5841_CB120_WIT', '$p5841_CB120_M103_Alarm_M_II', '$p5730_CB0001_Current1M_IO_Value',
-  '$p5730_CB0003_status_Iavg', '$faja1001', $faja2001, '$FIT0963_IO_Value', '$FIT0962_IO_Value', '$relmodol1', NULL, '". str_replace( ',', '.', $FIT1801_IO_Value). "', NULL, '$amp_rel1', '$frec_rel1', '$relmodol2', NULL, '". str_replace( ',', '.', $FIT2801_IO_Value)."', NULL, '$amp_rel2', '$frec_rel2', '$p5780_MX1001_status_Iavg', '$p5780_MX2001_status_Iavg',
+  '$p5730_CB0003_status_Iavg', '$faja1001', $faja2001, '$FIT0963_IO_Value', '$FIT0962_IO_Value', '$relmodol1', $sol_rel1, '$flow_rel1', $ton_rel1,'$amp_rel1', '$frec_rel1', '$relmodol2', $sol_rel2, '$flow_rel2', '$ton_rel2', '$amp_rel2', '$frec_rel2', '$p5780_MX1001_status_Iavg', '$p5780_MX2001_status_Iavg',
   '". str_replace( ',', '.', $LIT1803_IO_Value). "', '". str_replace( ',', '.', $LIT2803_IO_Value). "', '". str_replace( ',', '.', $frecba_shoux)."',
   '". str_replace( ',', '.', $frecbb_shoux)."', '". str_replace( ',', '.', $frecbc_shoux)."', '". str_replace( ',', '.', $Shouxin_601_PIT_018_Value)."',
   '". str_replace( ',', '.', $Shouxin_601_PIT_017_Value)."', '". str_replace( ',', '.', $Shouxin_601_PIT_016_Value)."', NULL, NULL, '$DIT1801_IO_alue', '$WCT5841_Value', '$WCT0303_Value','$WIT0303_IO_Value','$bm1001_pow','$bm1002_pow','$bm2001_pow','$bm2002_pow','$flujo_desaladora') ";
@@ -352,7 +432,7 @@ array_push($post_data,$row_data_l1);
 	$row_data_l2->hora=$mhora;
 array_push($post_data,$row_data_l2);	
 	
-  
+  print_r($query2);
 
 ####### descomentar para enviar hacia la bd local
   if (!$mysqli -> query($query)) {
@@ -365,17 +445,19 @@ array_push($post_data,$row_data_l2);
 
   $mysqli -> close();
 	
-	
 	// $mfecha = str_replace(' ','+',$mfecha);
 	// $query_param = "flow_l1=".$flow_z_l1."&flow_l2=".$flow_z_l2."&amp_l1=".$amp_z_l1."&amp_l2=".$amp_z_l2."&frec_l1=".$frec_z_l1."&frec_l2=".$frec_z_l2."&fecha=".$mfecha."&hora=".$mhora."&modo_l1=".$modo_l1."&modo_l2=".$modo_l2."&tonelaje_l1=".$jsondecode['WIT1741.IO.Value']."&tonelaje_l2=".$jsondecode['WIT2741.IO.Value']."&fmrelaves=".$jsondecode['WI1802.IO.Value']."&sol_l1=".$sol_l1."&ton_l1=".$ton_l1."&sol_l2=".$sol_l2."&ton_l2=".$ton_l2;
 	// //echo $query_param;
 	 $url = 'https://172.191.199.255/api/production';
+
+
+	 $token ="ccrhMawbA-wQcz14!ErS6sjmHvBoVuuD0dwGIWeY0OjeEAFFyOeCGC5qrOR05XJ=eSW5I/yi7Opw2fLfLEf5?6NK3RNo8tf!1eL/pGDnqcol=zG914uopVRVyBlqCACuzvciuTtRMkoussBxsf/yyfUs4IVkjHKJx2vXQq=VGciDOV6KTJUsu2Z2Oja?GOM40jyuyrbAqoReMOV8qqhEY3CzwzTAsBY9cFrWnHddApZ6g8C5TqSf4YQOFfAk!Lgy";	
+
 	// $url = $url.$query_param;
 	$ch1=curl_init();
 	$json_post_data = json_encode($post_data);
 	//DESCOMENTAR LAS SIGUIENTES 5 LINEAS PARA ENVIAR DATOS A TRAVES DEL PROXY Y HABILITAR EN NETWORKD EL ADAPTADOR CON LA RED DE CCR
 	// UNA VEZ HABILITADO EL ADAPTADOR PARAR EL SCRIPT Y VOLVERLO A INICIAR
-	
 		//curl_setopt($ch1, CURLOPT_HTTPPROXYTUNNEL, 1);
 		//curl_setopt($ch1, CURLOPT_PROXY, $proxyIP);
 		//curl_setopt($ch1, CURLOPT_PROXYPORT, $proxyPort);
@@ -410,7 +492,7 @@ array_push($post_data,$row_data_l2);
 			CURLOPT_TIMEOUT        => 120,
 			CURLOPT_MAXREDIRS      => 10,
 			CURLOPT_POST					=> 1,
-			CURLOPT_HTTPHEADER => array('Content-Type:application/json'),
+			CURLOPT_HTTPHEADER => array('Authorization: Bearer '.$token,'Content-Type:application/json'),
 			CURLOPT_POSTFIELDS     => $json_post_data,
 	);
 	
