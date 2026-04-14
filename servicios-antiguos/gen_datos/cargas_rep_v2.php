@@ -391,10 +391,12 @@ function ConsultaDB(){
 	}
 
   $query2 .= "(NULL, '$mfecha', '$mhora', '$WIT0304_IO_Value', '$p5841_CB120_WIT', '$p5841_CB120_M103_Alarm_M_II', '$p5730_CB0001_Current1M_IO_Value',
-  '$p5730_CB0003_status_Iavg', '$faja1001', $faja2001, '$FIT0963_IO_Value', '$FIT0962_IO_Value', '$relmodol1', $sol_rel1, '$flow_rel1', $ton_rel1,'$amp_rel1', '$frec_rel1', '$relmodol2', $sol_rel2, '$flow_rel2', '$ton_rel2', '$amp_rel2', '$frec_rel2', '$p5780_MX1001_status_Iavg', '$p5780_MX2001_status_Iavg',
+  '$p5730_CB0003_status_Iavg', '$faja1001', '$faja2001', '$FIT0963_IO_Value', '$FIT0962_IO_Value', '$relmodol1', '$sol_rel1', '$flow_rel1', '$ton_rel1','$amp_rel1', '$frec_rel1', '$relmodol2', '$sol_rel2', '$flow_rel2', '$ton_rel2', '$amp_rel2', '$frec_rel2', '$p5780_MX1001_status_Iavg', '$p5780_MX2001_status_Iavg',
   '". str_replace( ',', '.', $LIT1803_IO_Value). "', '". str_replace( ',', '.', $LIT2803_IO_Value). "', '". str_replace( ',', '.', $frecba_shoux)."',
   '". str_replace( ',', '.', $frecbb_shoux)."', '". str_replace( ',', '.', $frecbc_shoux)."', '". str_replace( ',', '.', $Shouxin_601_PIT_018_Value)."',
   '". str_replace( ',', '.', $Shouxin_601_PIT_017_Value)."', '". str_replace( ',', '.', $Shouxin_601_PIT_016_Value)."', NULL, NULL, '$DIT1801_IO_alue', '$WCT5841_Value', '$WCT0303_Value','$WIT0303_IO_Value','$bm1001_pow','$bm1002_pow','$bm2001_pow','$bm2002_pow','$flujo_desaladora') ";
+
+	$query2 = str_replace(["''","null","'NULL'"],"NULL",$query2);
 
 
 
