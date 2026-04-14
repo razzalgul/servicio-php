@@ -39,7 +39,7 @@ class ProductionCalculator
         $segundosDia = $now->getTimestamp() - $shiftTimes['inicioDia'];
 
         // --- Cálculo de segundos transcurridos en semana y mes ---
-        // Lógica para inicio de semana (Lunes 8am)
+        // Lógica para inicio de semana (lunes 8am)
         if ((int)$now->format('N') === 1 && (int)$now->format('G') < 8) {
             $inicioSemana = $now->modify('last monday')->setTime(8, 0, 0);
         } else {
