@@ -432,6 +432,9 @@ array_push($post_data,$row_data_l1);
 	$row_data_l2->hora=$mhora;
 array_push($post_data,$row_data_l2);	
 	
+  // Convertir strings vacíos o textos 'null' en valores NULL reales de SQL
+  $query2 = str_replace(["''", "'null'", "'NULL'"], "NULL", $query2);
+
   print_r($query2);
 
 ####### descomentar para enviar hacia la bd local
