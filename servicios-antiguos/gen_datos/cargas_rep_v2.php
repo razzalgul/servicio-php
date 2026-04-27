@@ -82,11 +82,13 @@ function ConsultaDB(){
 		'Shouxin_601_PIT_018.Value',
 
 		'DIT1801.IO.Value',
+    	'WI1802.IO.Value',
 		'DIT1802.FMIT',
 		'DIT2801.FMIT',
 		'DIT2802.FMIT',
 
 		'DIT1802.SIT',
+    	'DFI1801.IO.Value',
 		'DIT2801.SIT',
 		'DIT2802.SIT',
 
@@ -272,12 +274,12 @@ function ConsultaDB(){
 
 	// densimetros de relaves
 	$r_pu1001_tonnage = (int)$jsondecode["DIT1802.FMIT"];
-	$r_pu1002_tonnage = 'null';
+	$r_pu1002_tonnage = (int)$jsondecode["WI1802.IO.Value"];
 	$r_pu2001_tonnage = (int)$jsondecode["DIT2801.FMIT"];
 	$r_pu2002_tonnage = (int)$jsondecode["DIT2802.FMIT"];
 
 	$r_pu1001_sol = (int)$jsondecode["DIT1802.SIT"];
-	$r_pu1002_sol = 'null';
+	$r_pu1002_sol = (int)$jsondecode["DFI1801.IO.Value"];
 	$r_pu2001_sol = (int)$jsondecode["DIT2801.SIT"];
 	$r_pu2002_sol = (int)$jsondecode["DIT2802.SIT"];
 
@@ -533,8 +535,6 @@ array_push($post_data,$row_data_l2);
 
   return 1;
 }
-
-
 
 ConsultaDB();
 
