@@ -97,6 +97,7 @@ class Application
 
                     $now = new \DateTimeImmutable();
                     $shiftTimestamps = $this->calculator->getShiftTimestamps($now);
+                    $this->logger->debug("Timestamps de turno (shiftTimestamps) calculados.", $shiftTimestamps);
 
 
                     // La semana  comienza el lunes a las 8:00 AM.

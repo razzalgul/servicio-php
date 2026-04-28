@@ -50,8 +50,18 @@ class DataBaseService
 
     public function getHistoricalValues(array $tagNames, string $dateTime): array
     {
+        $this->logger->info('Solicitando getHistoricalValues con los parámetros:', [
+            'tagNames' => $tagNames,
+            'dateTime' => $dateTime
+        ]);
+
         $this->connect();
         if (!$this->pdo) return [];
+
+        if (empty($tagNames)) {
+            $this->logger->warning('getHistoricalValues fue llamado con un array de tagNames vacío. Retornando array vacío.');
+            return [];
+        }
 
         $placeholders = implode(',', array_fill(0, count($tagNames), '?'));
         $sql = "SELECT TagName, round(Value, 2) as pvalor FROM Runtime.dbo.AnalogHistory WHERE TagName IN ($placeholders) AND DateTime = ?";
@@ -63,6 +73,13 @@ class DataBaseService
         $results = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $results[$row['TagName']] = $row['pvalor'];
+        }
+
+        if (empty($results)) {
+            $this->logger->warning('La consulta a AnalogHistory no devolvió resultados para los parámetros proporcionados.', [
+                'dateTime' => $dateTime,
+                'tags' => $tagNames
+            ]);
         }
         return $results;
     }
@@ -83,4 +100,3 @@ class DataBaseService
 
     
 }
-

@@ -12,7 +12,7 @@ class ProductionCalculator
 
     private int $metaMes = 940057;
     private int $metaSemana  = 231000;
-    private int $metaDia = 33000;
+    private int $metaDia = 34426;
     private int $metaAnual = 1050000;
 
     /**
