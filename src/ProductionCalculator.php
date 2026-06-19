@@ -4,8 +4,9 @@ namespace App;
 
 class ProductionCalculator
 {
-    // Constantes para factores de cálculo y "números mágicos"
-    private const TON_PRODUCCION_DISENO_PER_SEC = 0.3935;
+    // Constantes para factores de cálculo
+      // calculo para 32k humedas diario con un porcentaje de humedad de 8.5 = 34972.6775 TMH
+    private const TON_PRODUCCION_DISENO_PER_SEC = 0.4047; 
     private const TON_ENVIO_DISENO_PER_SEC = 0.5346;
     private const TON_ENVIO_FAJA0_DISENO_PER_SEC = 0.5469;
     private const POWER_MOLINO_MAX = 8500;
