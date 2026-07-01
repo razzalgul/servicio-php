@@ -5,7 +5,7 @@ namespace App;
 class ProductionCalculator
 {
     // Constantes para factores de cálculo
-      // calculo para 32k humedas diario con un porcentaje de humedad de 8.5 = 34972.6775 TMH
+      // calculo para 32k secas diario con un porcentaje de humedad de 8.5 = 34972.6775 TMH
     private const TON_PRODUCCION_DISENO_PER_SEC = 0.4047; 
     private const TON_ENVIO_DISENO_PER_SEC = 0.5346;
     private const TON_ENVIO_FAJA0_DISENO_PER_SEC = 0.5469;
@@ -13,7 +13,7 @@ class ProductionCalculator
 
     private int $metaMes = 940057;
     private int $metaSemana  = 231000;
-    private int $metaDia = 34426;
+    private int $metaDia = 34973;
     private int $metaAnual = 1050000;
 
     /**
