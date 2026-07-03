@@ -3,8 +3,8 @@
 date_default_timezone_set('America/Lima');
 
 // Permite definir fechas por parámetros de consola (CLI) o con valores por defecto
-$fecha_inicio_str = isset($argv[1]) ? $argv[1] : '2026-07-01 00:00:00';
-$fecha_fin_str = isset($argv[2]) ? $argv[2] : '2026-07-02 00:00:00';
+$fecha_inicio_str =  '2026-06-24 22:00:00';
+$fecha_fin_str = '2026-07-03 04:00:00';
 
 function conexion()
 {

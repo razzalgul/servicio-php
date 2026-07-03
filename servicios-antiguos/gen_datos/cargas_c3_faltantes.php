@@ -3,8 +3,8 @@
 date_default_timezone_set('America/Lima');
 
 // Permite definir fechas por parámetros de consola (CLI) o con valores por defecto
-$fecha_inicio_str = $argv[1] ?? '2026-07-01 00:00:00';
-$fecha_fin_str = $argv[2] ?? '2026-07-02 00:00:00';
+$fecha_inicio_str =  '2026-06-25 23:00:00';
+$fecha_fin_str = '2026-07-03 04:00:00';
 
 function conexion()
 {
@@ -86,8 +86,6 @@ while ($current < $fin) {
     
     $data = json_encode($post_data, 1);
 
-    $proxyIP = '192.168.85.1';
-    $proxyPort = '3128';
     $url = "https://172.191.199.255/api/production/filter";
 
     $ch1 = curl_init();
