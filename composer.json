@@ -3,7 +3,7 @@
     "description": "servicio de lectura y envio de datos.",
     "type": "project",
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.3",
         "ext-sqlsrv": "*",
         "ext-openswoole": "*",
         "vlucas/phpdotenv": "^5.5",
