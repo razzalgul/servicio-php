@@ -20,10 +20,10 @@ function conexion()
 }
 
 $conn = conexion();
-
+$actualDate = date("Y-m-d H:i:00");
 $queryAvg = "SELECT TagName, AVG(Value) as Value FROM Runtime.dbo.AnalogHistory WHERE TagName IN ('WIT1741.IO.Value','WIT2741.IO.Value') AND DateTime BETWEEN DATEADD(HOUR,-1,GETDATE()) AND GETDATE() GROUP BY TagName";
 
-$queryTotalNow = "SELECT TagName, Value from Runtime.dbo.AnalogLive WHERE TagName IN ('WCT1741.Value','WCT2741.Value')";
+$queryTotalNow = "SELECT TagName, Value from Runtime.dbo.AnalogHistory WHERE TagName IN ('WCT1741.Value','WCT2741.Value') and DateTime = $actualDate ";
 $queryTotalPrev = "SELECT TagName, Value from Runtime.dbo.AnalogHistory WHERE TagName IN ('WCT1741.Value','WCT2741.Value') AND DateTime = DATEADD(HOUR, -1, GETDATE())";
 
 
@@ -43,6 +43,7 @@ while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
   $raw_data->{$row['TagName']} = $row['Value'];
 
 }
+
 
 
 $stmt = sqlsrv_query($conn, $queryTotalNow);
@@ -126,4 +127,4 @@ else {
 echo "Mensaje del servidor: " .$codigoRespuesta."respuesta: ".$resultado.PHP_EOL;
 }
 
-?>  
+?>

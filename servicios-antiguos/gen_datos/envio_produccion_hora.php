@@ -19,11 +19,11 @@ function conexion()
 }
 
 $conn = conexion();
-
-$prevHour = date('Y-m-d H:i:00',strtotime('-1 hour'));
+$actualDate = date("Y-m-d H:i:00");
+$prevHour = date($actualDate,strtotime('-1 hour'));
 
 // 1. Obtener valores actuales
-$queryNow = "SELECT TagName, Value FROM Runtime.dbo.AnalogLive WHERE TagName IN ('WCT1741.Value','WCT2741.Value')";
+$queryNow = "SELECT TagName, Value FROM Runtime.dbo.AnalogHistory WHERE TagName IN ('WCT1741.Value','WCT2741.Value') and DateTime = $actualDate";
 $stmtNow = sqlsrv_query($conn, $queryNow);
 $currentValues = [];
 while ($row = sqlsrv_fetch_array($stmtNow, SQLSRV_FETCH_ASSOC)) {

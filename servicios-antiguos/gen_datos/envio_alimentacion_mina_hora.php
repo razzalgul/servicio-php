@@ -27,7 +27,7 @@ $plantFeed = new stdClass();
 $plantFeed->date = $prevHourDate;
 
 // 1. Obtener valor actual
-$queryNow = "SELECT Value FROM Runtime.dbo.AnalogLive WHERE TagName = 'WCT5841WE120_002.Value'";
+$queryNow = "SELECT Value FROM Runtime.dbo.AnalogHistory WHERE TagName = 'WCT5841WE120_002.Value' and DateTime = '$actualDate'" ;
 $stmtNow = sqlsrv_query($conn, $queryNow);
 $rowNow = sqlsrv_fetch_array($stmtNow, SQLSRV_FETCH_ASSOC);
 $currentValue = ($rowNow !== null) ? $rowNow['Value'] : null;
